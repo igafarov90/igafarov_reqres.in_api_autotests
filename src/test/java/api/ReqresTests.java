@@ -96,7 +96,7 @@ public class ReqresTests extends TestBase {
 
 
     @Test
-    @DisplayName("Тестирование запроса Put c обновлением данных Users по полю job")
+    @DisplayName("Тестирование запроса Put c обновлением данных Users по полю job/name")
     public void modifyUser() {
 
         step("Создание user", () ->
@@ -104,7 +104,7 @@ public class ReqresTests extends TestBase {
 
         User userUpdate = new User(testData.updatedName, testData.updatedJob);
 
-        SuccessUserUpdate response = step("Отправка запроса put /users " + userUpdate, () ->
+        SuccessUserUpdate response = step("Отправка запроса put /users/" + userUpdate, () ->
                 given(requestSpec())
                         .when()
                         .body(userUpdate)
@@ -132,7 +132,7 @@ public class ReqresTests extends TestBase {
         step("Создание user", () ->
                 successUserCreate = testData.createUser());
 
-        step("Удаление user " + successUserCreate.getId(), () ->
+        step("Отправка запроса delete/user/" + successUserCreate.getId(), () ->
                 given(requestSpec())
                         .when()
                         .delete("/api/users/" + successUserCreate.getId())

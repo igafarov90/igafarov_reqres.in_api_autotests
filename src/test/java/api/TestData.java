@@ -45,7 +45,7 @@ public class TestData {
         return (response);
     }
 
-    public int getUserIdStatusCode() {
+    public int getUserIdResponseStatusCode() {
         return
                 given().when()
                         .spec(requestSpec())

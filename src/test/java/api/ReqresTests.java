@@ -140,7 +140,7 @@ public class ReqresTests extends TestBase {
                         .spec(responseSpecNoContent204()));
 
         step("Проверка, что user с id " + successUserCreate.getId() + " не существует", () ->
-                assertThat(testData.getUserIdStatusCode(), equalTo(HttpStatus.SC_NOT_FOUND)));
+                assertThat(testData.getUserIdResponseStatusCode(), equalTo(HttpStatus.SC_NOT_FOUND)));
 
     }
 }

@@ -1,4 +1,4 @@
-# Проект по автоматизации тестирования интернет-магазина [AMK](https://shop.proamk.ru/)
+# Проект по автоматизации тестирования API [reqres.in](https://shop.proamk.ru/)
 
 <p align="center">  
 <img alt="shop.proamk" src="/media/screenshots/reqres.in.png">

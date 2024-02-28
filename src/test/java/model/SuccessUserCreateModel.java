@@ -1,13 +1,14 @@
-package model.user;
+package model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class SuccessUserCreate{
+public class SuccessUserCreateModel {
+
 	private String createdAt;
 	private String name;
-	private String id;
+	private Integer id;
 	private String job;
 }

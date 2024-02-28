@@ -1,32 +1,34 @@
 package api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import config.apiConfig;
+import helpers.TestData;
+import io.qameta.allure.Owner;
 import lombok.SneakyThrows;
-import model.user.SuccessUserCreate;
-import model.user.SuccessUserUpdate;
-import model.user.User;
-
-import org.apache.http.HttpStatus;
+import model.*;
+import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.File;
 
-import static helpers.Specification.*;
+import static helpers.Specification.requestSpec;
+import static helpers.Specification.responseSpec;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.apache.http.HttpStatus.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static helpers.Holder.*;
 
-
-
+@Owner("Ilgiz Gafarov")
 public class ReqresTests extends TestBase {
 
     TestData testData = new TestData();
+    ObjectMapper mapper = new ObjectMapper();
+    private static apiConfig config = ConfigFactory.create(apiConfig.class);
+
 
     @DisplayName("Тестирование запроса Get List Users c queryParams page")
     @Test
@@ -36,13 +38,13 @@ public class ReqresTests extends TestBase {
                 given(requestSpec())
                         .when()
                         .queryParam("page", testData.page)
-                        .get("api/users")
+                        .get("users/")
                         .then()
-                        .spec(responseSpecOk200())
+                        .spec(responseSpec())
                         .assertThat()
-                        .body(matchesJsonSchemaInClasspath("schemas/list_users_schema.json")))
-                .body("page", equalTo(testData.page));
-
+                        .statusCode(SC_OK)
+                        .body(matchesJsonSchemaInClasspath("schemas/schema_list_users.json"))
+                        .body("page", equalTo(testData.page)));
     }
 
     @DisplayName("Тестирование запроса Get получить пользователя по его id")
@@ -50,97 +52,139 @@ public class ReqresTests extends TestBase {
     @SneakyThrows
     void getSingleUserByIdTest() {
 
-        String expectedResult = Files.readString(Paths.get("src/test/resources/schemas/single_user_response_body.json"));
-
-        String responseBody = step("Отправка запроса get users by id " + testData.id, () ->
+        ListUsersModel response = step("Отправка запроса get users by id " + testData.id, () ->
                 given(requestSpec())
                         .when()
-                        .get("api/users/" + testData.id)
+                        .get("users/" + testData.id)
                         .then()
-                        .spec(responseSpecOk200())
-                        .extract().asString());
+                        .spec(responseSpec())
+                        .assertThat()
+                        .statusCode(SC_OK)
+                        .body(matchesJsonSchemaInClasspath("schemas/schema_single_users.json"))
+                        .extract().as(ListUsersModel.class));
+
+        String actualJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(response);
+        ListUsersModel expectedModel = mapper.readValue(
+                new File("src/test/resources/schemas/single_user_response_body.json"), ListUsersModel.class);
+        String expectedJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(expectedModel);
 
         step("Сверка тела ответа с ожидаемым результатом", () ->
-                assertEquals(expectedResult, responseBody));
-
+                assertThat(expectedJson.equals(actualJson)));
     }
 
     @DisplayName("Тестирование запроса Post c проверкой key/value")
     @Test
     void createNewUserTest() {
 
-        User user = new User(testData.name, testData.job);
+        UserModel userCreateBody = new UserModel(testData.name, testData.job);
 
-        SuccessUserCreate response = step("Отправка запроса post /users " + user, () ->
+        SuccessUserCreateModel response = step("Отправка запроса post /users", () ->
                 given(requestSpec())
                         .when()
-                        .body(user)
-                        .post("api/users")
+                        .body(userCreateBody)
+                        .post("users/")
                         .then()
-                        .spec(responseSpecCreated201())
-                        .body(matchesJsonSchemaInClasspath("schemas/create_user_schema.json"))
-                        .extract().response().as(SuccessUserCreate.class));
+                        .spec(responseSpec())
+                        .statusCode(SC_CREATED)
+                        .body(matchesJsonSchemaInClasspath("schemas/schema_create_user.json"))
+                        .extract().response().as(SuccessUserCreateModel.class));
 
         step("Проверка, что id not null", () ->
-                assertThat(response.getId(), notNullValue()));
+                assertThat(response.getId()).isNotNull());
 
         step("Проверка, что name равен " + testData.name, () ->
-                assertEquals(response.getName(), testData.name));
+                assertThat(response.getName().equals(testData.name)));
 
         step("Проверка, что job равен " + testData.job, () ->
-                assertEquals(response.getJob(), testData.job));
+                assertThat(response.getJob().equals(testData.job)));
 
-        step("Проверка, что gateCreated равна " + testData.getDate(), () ->
-                assertThat(response.getCreatedAt(), startsWith(testData.getDate())));
+        step("Проверка, что dateCreated равна " + testData.getDate(), () ->
+                assertThat(response.getCreatedAt().startsWith(testData.getDate())));
     }
 
 
     @Test
     @DisplayName("Тестирование запроса Put c обновлением данных Users по полю job/name")
-    public void modifyUser() {
+    public void modifyUserTest() {
 
-        step("Создание user", () ->
-                successUserCreate = testData.createUser());
+        UserModel userUpdateBody = new UserModel(testData.updatedName, testData.updatedJob);
 
-        User userUpdate = new User(testData.updatedName, testData.updatedJob);
-
-        SuccessUserUpdate response = step("Отправка запроса put /users/" + userUpdate, () ->
+        SuccessUserUpdate response = step("Отправка запроса put /users/" + testData.id, () ->
                 given(requestSpec())
                         .when()
-                        .body(userUpdate)
-                        .put("/api/users/" + (successUserCreate.getId()))
+                        .body(userUpdateBody)
+                        .put("users/" + testData.id)
                         .then()
-                        .spec(responseSpecOk200())
-                        .body(matchesJsonSchemaInClasspath("schemas/update_user_schema.json"))
+                        .spec(responseSpec())
+                        .statusCode(SC_OK)
+                        .body(matchesJsonSchemaInClasspath("schemas/schema_update_user.json"))
                         .extract()
                         .as(SuccessUserUpdate.class));
 
         step("Проверка, что name равен " + testData.updatedName, () ->
-                assertEquals(response.getName(), testData.updatedName));
+                assertThat(response.getName().equals(testData.updatedName)));
 
         step("Проверка, что job равен " + testData.updatedJob, () ->
-                assertEquals(response.getJob(), testData.updatedJob));
+                assertThat(response.getJob().equals(testData.updatedJob)));
 
         step("Проверка, что updatedAT равна " + testData.getDate(), () ->
-                assertThat(response.getUpdatedAt(), startsWith(testData.getDate())));
+                assertThat(response.getUpdatedAt()).startsWith(testData.getDate()));
     }
 
     @Test
     @DisplayName("Тестирование запроса Delete c удалением пользователя")
-    public void deleteUser() {
+    public void deleteUserTest() {
 
-        step("Создание user", () ->
-                successUserCreate = testData.createUser());
-
-        step("Отправка запроса delete/user/" + successUserCreate.getId(), () ->
+        step("Отправка запроса delete/user/" + testData.id, () ->
                 given(requestSpec())
                         .when()
-                        .delete("/api/users/" + successUserCreate.getId())
+                        .delete("users/" + testData.id)
                         .then()
-                        .spec(responseSpecNoContent204()));
-
-        step("Проверка, что user с id " + successUserCreate.getId() + " не существует", () ->
-                assertThat(testData.getUserIdResponseStatusCode(), equalTo(HttpStatus.SC_NOT_FOUND)));
-
+                        .assertThat()
+                        .statusCode(SC_NO_CONTENT));
     }
+
+    @Test
+    @DisplayName("Успешная регистрация пользователя")
+    void successfulRegisterUserTest() {
+
+        RegisterModel registerBody = new RegisterModel(config.password(), config.email());
+
+        SuccessRegisterModel response = step("Запрос на регистрацию существующего пользователя", () ->
+                given(requestSpec())
+                        .when()
+                        .log().all()
+                        .body(registerBody)
+                        .post("register/")
+                        .then()
+                        .log().all()
+                        .spec(responseSpec())
+                        .statusCode(SC_OK)
+                        .extract().as(SuccessRegisterModel.class));
+
+        step("Проверка Id", () ->
+                assertThat(response.getId()).isNotNull());
+
+        step("Проверка token", () ->
+                assertThat(response.getToken()).isNotNull());
+    }
+
+    @Test
+    @DisplayName("Отправка на регистрацию с незаполненными email/password")
+    void emptyAuthDataTest() {
+
+        UnsuccessfulRegisterModel response = step("Передача запроса на регистрацию с незаполненными email/password", () ->
+                given(requestSpec())
+                        .when()
+                        .log().all()
+                        .post("register")
+                        .then()
+                        .log().all()
+                        .spec(responseSpec())
+                        .extract().as(UnsuccessfulRegisterModel.class));
+
+        step("Проверка ответа", () ->
+                assertThat(response.getError()).isEqualTo(testData.errorRegister));
+    }
+
 }

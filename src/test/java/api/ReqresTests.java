@@ -30,7 +30,7 @@ public class ReqresTests extends TestBase {
     private static apiConfig config = ConfigFactory.create(apiConfig.class);
 
 
-    @DisplayName("Тестирование запроса Get List Users c queryParams page")
+    @DisplayName("Тестирование запроса Get List Users ?page=2")
     @Test
     void getListUsersTest() {
 
@@ -132,7 +132,7 @@ public class ReqresTests extends TestBase {
     }
 
     @Test
-    @DisplayName("Тестирование запроса Delete c удалением пользователя")
+    @DisplayName("Тестирование запроса Delete удаление пользователя")
     public void deleteUserTest() {
 
         step("Отправка запроса delete/user/" + testData.id, () ->

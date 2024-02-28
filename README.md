@@ -52,8 +52,8 @@ ____
 - :white_check_mark: Тестирование запроса Post регистрация пользователя
 - :white_check_mark: Тестирование запроса Post c проверкой key/value
 - :white_check_mark: Тестирование запроса Get получить пользователя по его id
-- :white_check_mark: Тестирование запроса Delete c удалением пользователя
-- :white_check_mark: Тестирование запроса Get List Users c queryParams page
+- :white_check_mark: Тестирование запроса Delete удаление пользователя
+- :white_check_mark: Тестирование запроса Get List Users ?page=2
 
 
 <a id="console"></a>
@@ -79,7 +79,7 @@ ____
 
 ## <img src="media/logo/Allure.svg" width="25" height="25"  alt="Allure"/></a> Allure <a target="_blank" href="https://jenkins.autotests.cloud/job/igafarov_reqres.in_api_autotests/allure/">отчёт</a>
 
-### *Основная страница отчёта*
+### *Пример отчёта о прохождении тестов*
 
 <p align="center">  
 <img title="Allure Overview Dashboard" src="media/screenshots/allure.jpg">  
@@ -97,7 +97,7 @@ ____
 
 <a id="jira"></a>
 
-## <img src="media/logo/Jira.svg" width="25" height="25"  alt="Allure"/></a>Интеграция с <a target="_blank" href="https://jira.autotests.cloud/browse/HOMEWORK-1137">Jira</a>
+## <img src="media/logo/Jira.svg" width="25" height="25"  alt="Allure"/></a>Интеграция с <a target="_blank" href="https://jira.autotests.cloud/browse/HOMEWORK-1140">Jira</a>
 
 <p align="center">  
 <img title="Jira" src="media/screenshots/jira.jpg">  

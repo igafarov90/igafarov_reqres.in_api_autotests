@@ -145,7 +145,7 @@ public class ReqresTests extends TestBase {
     }
 
     @Test
-    @DisplayName("Успешная регистрация пользователя")
+    @DisplayName("Успешная регистрация поffльзователя")
     void successfulRegisterUserTest() {
 
         RegisterModel registerBody = new RegisterModel(config.password(), config.email());

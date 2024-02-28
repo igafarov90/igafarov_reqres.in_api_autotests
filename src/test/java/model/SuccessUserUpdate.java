@@ -1,9 +1,10 @@
 package model;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
-@AllArgsConstructor
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 public class SuccessUserUpdate{
 	private String name;

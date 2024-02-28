@@ -3,8 +3,8 @@ package model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-@Data
 @AllArgsConstructor
+@Data
 public class RegisterModel {
 
 	private String password;

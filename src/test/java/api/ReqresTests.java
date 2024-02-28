@@ -105,7 +105,7 @@ public class ReqresTests extends TestBase {
 
     @Test
     @DisplayName("Тестирование запроса Put c обновлением данных Users по полю job/name")
-    public void modifyUserTest() {
+    public void updateUserTest() {
 
         UserModel userUpdateBody = new UserModel(testData.updatedName, testData.updatedJob);
 
@@ -145,7 +145,7 @@ public class ReqresTests extends TestBase {
     }
 
     @Test
-    @DisplayName("Успешная регистрация поffльзователя")
+    @DisplayName("Успешная регистрация пользователя")
     void successfulRegisterUserTest() {
 
         RegisterModel registerBody = new RegisterModel(config.password(), config.email());

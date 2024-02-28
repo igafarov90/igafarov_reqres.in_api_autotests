@@ -11,7 +11,8 @@ public class TestBase {
     public static void setUp() {
 
         RestAssured.baseURI = "https://reqres.in/api/";
-        //     RestAssured.filters(new AllureRestAssured());
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+
 
     }
 

@@ -104,7 +104,7 @@ public class ReqresTests extends TestBase {
 
 
     @Test
-    @DisplayName("Тестирование запроса Put c обновлением данных Users по полю job/name")
+    @DisplayName("Тестирование запроса Patch c обновлением данных Users по полю job/name")
     public void updateUserTest() {
 
         UserModel userUpdateBody = new UserModel(testData.updatedName, testData.updatedJob);
@@ -113,7 +113,7 @@ public class ReqresTests extends TestBase {
                 given(requestSpec())
                         .when()
                         .body(userUpdateBody)
-                        .put("users/" + testData.id)
+                        .patch("users/" + testData.id)
                         .then()
                         .spec(responseSpec())
                         .statusCode(SC_OK)
@@ -145,7 +145,7 @@ public class ReqresTests extends TestBase {
     }
 
     @Test
-    @DisplayName("Успешная регистрация пользователя")
+    @DisplayName("Тестирование запроса Post регистрация пользователя")
     void successfulRegisterUserTest() {
 
         RegisterModel registerBody = new RegisterModel(config.password(), config.email());
@@ -153,11 +153,9 @@ public class ReqresTests extends TestBase {
         SuccessRegisterModel response = step("Запрос на регистрацию существующего пользователя", () ->
                 given(requestSpec())
                         .when()
-                        .log().all()
                         .body(registerBody)
                         .post("register/")
                         .then()
-                        .log().all()
                         .spec(responseSpec())
                         .statusCode(SC_OK)
                         .extract().as(SuccessRegisterModel.class));
@@ -170,16 +168,14 @@ public class ReqresTests extends TestBase {
     }
 
     @Test
-    @DisplayName("Отправка на регистрацию с незаполненными email/password")
-    void emptyAuthDataTest() {
+    @DisplayName("Тестирование запроса Post регистрация пользователя с незаполненными email/password")
+    void unsuccessfulRegisterUserTest() {
 
         UnsuccessfulRegisterModel response = step("Передача запроса на регистрацию с незаполненными email/password", () ->
                 given(requestSpec())
                         .when()
-                        .log().all()
                         .post("register")
                         .then()
-                        .log().all()
                         .spec(responseSpec())
                         .extract().as(UnsuccessfulRegisterModel.class));
 

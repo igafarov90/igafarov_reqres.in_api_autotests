@@ -1,5 +1,3 @@
-package api;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import config.apiConfig;
 import helpers.TestData;

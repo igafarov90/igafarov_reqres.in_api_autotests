@@ -1,5 +1,5 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
-import config.apiConfig;
+import config.ApiConfig;
 import helpers.TestData;
 import io.qameta.allure.Owner;
 import lombok.SneakyThrows;
@@ -25,7 +25,7 @@ public class ReqresTests extends TestBase {
 
     TestData testData = new TestData();
     ObjectMapper mapper = new ObjectMapper();
-    private static apiConfig config = ConfigFactory.create(apiConfig.class);
+    private static ApiConfig config = ConfigFactory.create(ApiConfig.class);
 
 
     @DisplayName("Тестирование запроса Get List Users ?page=2")
